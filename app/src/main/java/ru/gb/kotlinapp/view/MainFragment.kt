@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import ru.gb.kotlinapp.R
 import ru.gb.kotlinapp.databinding.MainFragmentBinding
+import ru.gb.kotlinapp.model.City
 import ru.gb.kotlinapp.model.Weather
 import ru.gb.kotlinapp.viewmodel.AppState
 import ru.gb.kotlinapp.viewmodel.MainViewModel
@@ -51,9 +53,13 @@ class MainFragment : Fragment() {
 
         val observer = Observer<AppState> {
             if (randomInt<=50) {
-                //renderData(Error)
+                renderData(AppState.Loading)
+
+                renderData(AppState.Success(Weather()))
+
             } else {
-                //renderData(AppState.Success)
+                renderData(AppState.Loading)
+                renderData(AppState.Error(Throwable()))
             }
         }
 
@@ -64,14 +70,14 @@ class MainFragment : Fragment() {
         when(appState) {
 
             is  AppState.Success -> {
-                val weatherData = appState.weatherData
                 binding.loadingLayout.visibility = View.GONE
+                val weatherData = appState.weatherData
                 Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
 
                 setData(weatherData)
             }
             is AppState.Loading -> {
-                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.visibility = View.INVISIBLE
             }
             is AppState.Error -> {
                 binding.loadingLayout.visibility = View.GONE
